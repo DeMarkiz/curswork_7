@@ -1,6 +1,6 @@
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from habits.models import Habit
@@ -72,3 +72,8 @@ class UserHabitViewSet(APIView):
         result = paginator.paginate_queryset(habits, request)
         serializer = HabitSerializer(result, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+class PublishedHabitListAPIView(generics.ListAPIView):
+    serializer_class = HabitSerializer
+    queryset = Habit.objects.filter(published=True)
+    pagination_class = ViewUserHabitPagination
