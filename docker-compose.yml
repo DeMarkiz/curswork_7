@@ -19,6 +19,17 @@ services:
       - db
       - redis
 
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/staticfiles
+    depends_on:
+      - web
+
   celery:
     image: python:3.12-slim
     container_name: celery_worker
