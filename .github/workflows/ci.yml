@@ -70,10 +70,10 @@ jobs:
 
       - name: Recreate test database
         run: |
-          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "
-          SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='test_dbb';
-          DROP DATABASE IF EXISTS test_dbb;"
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='test_dbb';"
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "COMMIT; DROP DATABASE IF EXISTS test_dbb;"
           PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "CREATE DATABASE test_dbb;"
+      
 
       - name: Run migrations
         run: python manage.py migrate
