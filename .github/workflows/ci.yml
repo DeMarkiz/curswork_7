@@ -29,19 +29,19 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: test_db
+          POSTGRES_DB: test_dbb
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U test_user -d test_db"
+          --health-cmd "pg_isready -U test_user -d test_dbb"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      POSTGRES_DB: test_db
+      POSTGRES_DB: test_dbb
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: test_password
       POSTGRES_HOST: localhost
@@ -70,7 +70,7 @@ jobs:
 
       - name: Create test database
         run: |
-          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "CREATE DATABASE test_db;"
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d postgres -c "CREATE DATABASE test_dbb;"
 
       - name: Run migrations
         run: python manage.py migrate
