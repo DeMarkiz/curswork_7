@@ -3,29 +3,19 @@ from django.contrib.auth.models import AbstractUser
 
 NULLABLE = {"blank": True, "null": True}
 
+
 class CustomUser(AbstractUser):
     """
-        Модель пользователя
-        """
+    Модель пользователя
+    """
+
     username = None
 
-    email = models.EmailField(
-        unique=True,
-        verbose_name="Email"
-    )
-    first_name = models.CharField(
-        max_length=50,
-        verbose_name="Имя",
-        **NULLABLE
-    )
-    last_name = models.CharField(
-        max_length=50,
-        verbose_name="Фамилия",
-        **NULLABLE
-    )
+    email = models.EmailField(unique=True, verbose_name="Email")
+    first_name = models.CharField(max_length=50, verbose_name="Имя", **NULLABLE)
+    last_name = models.CharField(max_length=50, verbose_name="Фамилия", **NULLABLE)
     tg_chat_id = models.PositiveIntegerField(
-        verbose_name="ID чата в Telegram",
-        **NULLABLE
+        verbose_name="ID чата в Telegram", **NULLABLE
     )
 
     USERNAME_FIELD = "email"

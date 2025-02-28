@@ -4,11 +4,11 @@ from rest_framework.validators import ValidationError
 
 class FieldFillingValidator:
     """Проверка заполнения полей reward и related_habit"""
+
     def __init__(self, reward, related_habit, sign_of_a_pleasant_habit):
         self.reward = reward
         self.related_habit = related_habit
         self.sign_of_a_pleasant_habit = sign_of_a_pleasant_habit
-
 
     def __call__(self, value):
         reward_field = value.get(self.reward)
@@ -30,8 +30,10 @@ class FieldFillingValidator:
                     "Поле reward или поле related_habit обязательное для заполнения у полезной привычки"
                 )
 
+
 class RelatedHabitValidator:
     """Валидатор для проверки связанной привычки на принадлежность к принятой привычки"""
+
     def __init__(self, related_habit):
         self.related_habit = related_habit
 
@@ -40,6 +42,7 @@ class RelatedHabitValidator:
         if habit:
             if not habit.sign_of_a_pleasant_habit:
                 raise ValidationError("Связанная привычка должна быть принята")
+
 
 def execution_time_validator(value):
     """Валидатор для проверки продолжительности выполнения привычки не более 120 секунд"""

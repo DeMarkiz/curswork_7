@@ -47,6 +47,7 @@ from users.permissions import IsOwner
 )
 class HabitsViewSet(viewsets.ModelViewSet):
     """Представление для модели Habit"""
+
     serializer_class = HabitSerializer
     queryset = Habit.objects.all()
 
@@ -61,10 +62,12 @@ class HabitsViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsOwner | IsAdminUser]
         return super().get_permissions()
 
+
 class UserHabitViewSet(APIView):
     """
     Представление для получения списка всех привычек пользователя
     """
+
     @swagger_auto_schema(responses={200: HabitSerializer()})
     def get(self, request):
         habits = Habit.objects.filter(owner=request.user)
@@ -72,6 +75,7 @@ class UserHabitViewSet(APIView):
         result = paginator.paginate_queryset(habits, request)
         serializer = HabitSerializer(result, many=True)
         return paginator.get_paginated_response(serializer.data)
+
 
 class PublishedHabitListAPIView(generics.ListAPIView):
     serializer_class = HabitSerializer

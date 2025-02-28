@@ -5,6 +5,7 @@ from habits.models import Habit
 @admin.register(Habit)
 class HabitAdmin(admin.ModelAdmin):
     """Админ модели Habit"""
+
     list_display = (
         "id",
         "habit",

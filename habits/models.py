@@ -6,35 +6,30 @@ from django.db import models
 from users.models import CustomUser
 
 
-NULLABLE = {"null": True, "blank":True}
+NULLABLE = {"null": True, "blank": True}
 
 
 class Habit(models.Model):
     """Модель привычки"""
-    habit = models.CharField(
-        max_length=255,
-        verbose_name="Привычка"
-    )
+
+    habit = models.CharField(max_length=255, verbose_name="Привычка")
     place_of_execution = models.CharField(
-        max_length=255, verbose_name="Место где нужно выполнять привычку",
-        **NULLABLE
+        max_length=255, verbose_name="Место где нужно выполнять привычку", **NULLABLE
     )
     time_execution = models.TimeField(
-        verbose_name="Время когда выполняется привычка",
-        **NULLABLE
+        verbose_name="Время когда выполняется привычка", **NULLABLE
     )
     periodicity = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(7)],
         verbose_name="Периодичность привычки",
-        default=1
+        default=1,
     )
     time_to_complete = models.DurationField(
         default=timedelta(seconds=120),
         verbose_name="Продолжительность выполнения привычки по времени",
     )
     sign_of_a_pleasant_habit = models.BooleanField(
-        verbose_name="Показатель приятной привычки",
-        default=False
+        verbose_name="Показатель приятной привычки", default=False
     )
     related_habit = models.ForeignKey(
         "self",
@@ -43,10 +38,7 @@ class Habit(models.Model):
         **NULLABLE,
         related_name="related_habits"
     )
-    reward = models.CharField(
-        verbose_name="Вознаграждение за привычку",
-        **NULLABLE
-    )
+    reward = models.CharField(verbose_name="Вознаграждение за привычку", **NULLABLE)
 
     STATUS_PUBLISHED = [
         ("Опубликован", "Опубликован"),
@@ -66,9 +58,7 @@ class Habit(models.Model):
         **NULLABLE
     )
     send_indicator = models.PositiveSmallIntegerField(
-        editable=False,
-        verbose_name="Индикатор отправки",
-        **NULLABLE
+        editable=False, verbose_name="Индикатор отправки", **NULLABLE
     )
 
     class Meta:

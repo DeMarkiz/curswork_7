@@ -16,7 +16,6 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-from django.conf.global_settings import AUTH_USER_MODEL
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
@@ -175,25 +173,25 @@ SIMPLE_JWT = {
 
 
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            'description': 'Введите токен в формате: Bearer <Ваш JWT-токен>',
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Введите токен в формате: Bearer <Ваш JWT-токен>",
         },
     },
 }
-STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:127.0.0.1:8000',  # Замените на адрес вашего фронтенд-сервера
+    "http://localhost:127.0.0.1:8000",  # Замените на адрес вашего фронтенд-сервера
     "https://read-and-write.example.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.example.com",  # Замените на адрес вашего фронтенд-сервера
-                                           # и добавьте адрес бэкенд-сервера
+    # и добавьте адрес бэкенд-сервера
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -201,10 +199,12 @@ CORS_ALLOW_ALL_ORIGINS = False
 # Настройки для Celery
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = os.getenv('BROKER_URL') # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = os.getenv(
+    "BROKER_URL"
+)  # Например, Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = os.getenv('BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv("BROKER_URL")
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = TIME_ZONE
@@ -217,9 +217,11 @@ broker_connection_retry_on_startup = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULE = {
-    'send_message_to_user': {
-        'task': 'habits.tasks.send_message_to_user',  # Путь к задаче
-        'schedule': timedelta(days=1),  # Расписание выполнения задачи (например, каждые 10 минут)
+    "send_message_to_user": {
+        "task": "habits.tasks.send_message_to_user",  # Путь к задаче
+        "schedule": timedelta(
+            days=1
+        ),  # Расписание выполнения задачи (например, каждые 10 минут)
     },
 }
 
