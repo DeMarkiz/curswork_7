@@ -1,53 +1,41 @@
-from datetime import timedelta
-from rest_framework.validators import ValidationError
+from rest_framework import serializers
 
 
-class FieldFillingValidator:
-    """Проверка заполнения полей reward и related_habit"""
-
-    def __init__(self, reward, related_habit, sign_of_a_pleasant_habit):
-        self.reward = reward
-        self.related_habit = related_habit
-        self.sign_of_a_pleasant_habit = sign_of_a_pleasant_habit
-
-    def __call__(self, value):
-        reward_field = value.get(self.reward)
-        related_habit_filed = value.get(self.related_habit)
-        sign_of_a_pleasant_habit_field = value.get(self.sign_of_a_pleasant_habit)
-
-        if reward_field and related_habit_filed:
-            raise ValidationError(
-                "Может быть заполнено поле reward или поле related_habit"
-            )
-        if sign_of_a_pleasant_habit_field:
-            if reward_field or related_habit_filed:
-                raise ValidationError(
-                    "У приятной привычки не может быть связанной привычки или вознаграждения"
-                )
-        else:
-            if not reward_field and not related_habit_filed:
-                raise ValidationError(
-                    "Поле reward или поле related_habit обязательное для заполнения у полезной привычки"
-                )
+def validate_award_and_related_habit(attrs, fields):
+    filled_fields = [fields for field in fields if attrs.get(field) not in (None, "")]
+    if len(filled_fields) > 1:
+        raise serializers.ValidationError(
+            f'Можно заполнить только одно из полей: {", ".join(fields)}.'
+        )
 
 
-class RelatedHabitValidator:
-    """Валидатор для проверки связанной привычки на принадлежность к принятой привычки"""
-
-    def __init__(self, related_habit):
-        self.related_habit = related_habit
-
-    def __call__(self, value):
-        habit = value.get(self.related_habit)
-        if habit:
-            if not habit.sign_of_a_pleasant_habit:
-                raise ValidationError("Связанная привычка должна быть принята")
+def validate_execution_time(value):
+    if value not in range(120):
+        raise serializers.ValidationError(
+            "Время на выполнение должно быть не больше 2 минут"
+        )
 
 
-def execution_time_validator(value):
-    """Валидатор для проверки продолжительности выполнения привычки не более 120 секунд"""
-    if value:
-        if value > timedelta(seconds=120):
-            raise ValidationError(
-                "Продолжительность выполнение привычки не может быть более 120 секунд"
-            )
+def validate_periodicity(value):
+    if value not in range(1, 8):
+        raise serializers.ValidationError(
+            "Периодичность должна быть в пределах от 1 до 8 дней"
+        )
+
+
+def validate_related_habit(attrs, field_name="related_habit"):
+    related_habit = attrs.get(field_name)
+    if related_habit and not related_habit.is_pleasant_habit:
+        raise serializers.ValidationError(
+            f"{field_name}: Связанная привычка должна быть отмечена как приятная"
+        )
+
+
+def validate_pleasant_habit(attrs):
+    is_pleasant_habit = attrs.get("is_pleasant_habit")
+    related_habit = attrs.get("related_habit")
+    award = attrs.get("award")
+    if is_pleasant_habit and (related_habit or award):
+        raise serializers.ValidationError(
+            "У приятной привычки не может быть вознаграждения или связанной привычки"
+        )

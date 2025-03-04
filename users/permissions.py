@@ -1,17 +1,15 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
 
-class IsOwner(BasePermission):
-    """Является ли пользователь владельцом бота?"""
-
+class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if obj.owner == request.user:
+        if obj.user == request.user:
             return True
         return False
 
 
-class IsUserProfile(BasePermission):
-    """является ли это профиль текущего пользователя?"""
-
+class IsUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user.id == obj.id
+        if obj == request.user:
+            return True
+        return False

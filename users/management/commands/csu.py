@@ -1,16 +1,16 @@
-from django.core.management import BaseCommand
-from users.models import CustomUser
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """Команда для создания суперадмина"""
 
     def handle(self, *args, **options):
-        user = CustomUser.objects.create(
-            email="admin@sky.ru",
-            is_staff=True,
-            is_superuser=True,
-            is_active=True,
-        )
+        User = get_user_model()
+        user = User.objects.create(email="admin@admin.ru")
         user.set_password("123")
+        user.is_staff = True
+        user.is_superuser = True
         user.save()
+        self.stdout.write(
+            self.style.SUCCESS(f"Успешно создан суперпользователь с email {user.email}")
+        )

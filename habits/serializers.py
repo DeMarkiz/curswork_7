@@ -1,25 +1,27 @@
 from rest_framework import serializers
-from habits.models import Habit
-from habits.validators import (
-    FieldFillingValidator,
-    RelatedHabitValidator,
-    execution_time_validator,
+from .validators import (
+    validate_award_and_related_habit,
+    validate_execution_time,
+    validate_related_habit,
+    validate_periodicity,
+    validate_pleasant_habit,
 )
+from .models import Habit
 
 
 class HabitSerializer(serializers.ModelSerializer):
-    """Сериалезатор для модели Habit"""
-
-    time_to_complete = serializers.DurationField(
-        validators=[execution_time_validator], required=False
+    execution_time = serializers.IntegerField(
+        default=0, validators=[validate_execution_time]
     )
+    periodicity = serializers.IntegerField(default=1, validators=[validate_periodicity])
+
+    def validate(self, attrs):
+        validate_award_and_related_habit(attrs, fields=["related_habit", "award"])
+        validate_related_habit(attrs, field_name="related_habit")
+        validate_pleasant_habit(attrs)
+
+        return attrs
 
     class Meta:
         model = Habit
-        exclude = ("send_indicator",)
-        validators = [
-            FieldFillingValidator(
-                "reward", "related_habit", "sign_of_a_pleasant_habit"
-            ),
-            RelatedHabitValidator("related_habit"),
-        ]
+        fields = "__all__"

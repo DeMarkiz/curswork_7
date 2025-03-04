@@ -1,64 +1,28 @@
-from django.utils.decorators import method_decorator
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAdminUser
-from users.models import CustomUser
-from users.serializers import UserSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .models import User
+from .permissions import IsUser
+from .serializers import UserCommonSerializer, UserSerializer
 
 
-@method_decorator(
-    name="list",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для получения списка всех пользователей"
-    ),
-)
-@method_decorator(
-    name="retrieve",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для получения конкретного пользователя"
-    ),
-)
-@method_decorator(
-    name="create",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для создания пользователя"
-    ),
-)
-@method_decorator(
-    name="update",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для обновлении информации о пользователе"
-    ),
-)
-@method_decorator(
-    name="partial_update",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для частичного изменения информации о пользователе"
-    ),
-)
-@method_decorator(
-    name="destroy",
-    decorator=swagger_auto_schema(
-        operation_description="Контроллер для удаления пользователя"
-    ),
-)
 class UserViewSet(viewsets.ModelViewSet):
-    """Представление для модели CustomUser"""
+    model = User
+    queryset = User.objects.all()
 
-    serializer_class = UserSerializer
-    queryset = CustomUser.objects.all()
-    permission_classes = [IsAdminUser]
+    def get_serializer_class(self):
+        try:
+            if self.action in ("retrieve", "update", "partial_update", "destroy"):
+                if self.request.user.email == self.get_object().email:
+                    return UserSerializer
+        except AttributeError:
+            pass
+        return UserCommonSerializer
 
     def get_permissions(self):
-        if self.action == "create":
-            self.permission_classes = (AllowAny,)
-        return super().get_permissions()
-
-    def perform_create(self, serializer):
-        user = serializer.save(is_active=True)
-        user.set_password(user.password)
-        user.save(
-            update_fields=[
-                "password",
-            ]
-        )
+        if self.action in ("update", "partial_update", "destroy"):
+            permission_classes = [IsAuthenticated, IsUser]
+        elif self.action == "create":
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
